@@ -99,4 +99,22 @@ contract Minter is IMinter, AdminRole {
         collector = _collector;
         emit CollectorChanged(_collector, msg.sender);
     }
+
+    function changeDAOContract(address daoContract) external onlyAdmin {
+        require(daoContract != address(0), 'DAO cannot be address zero');
+        dao = IMintable(daoContract);
+        emit DAOContractChanged(daoContract, msg.sender);
+    }
+
+    function changeCSTKTokenContract(address cstkTokenContract) external onlyAdmin {
+        require(cstkTokenContract != address(0), 'CSTK token cannot be zero address');
+        cstkToken = IERC20(cstkTokenContract);
+        emit CSTKTokenContractChanged(cstkTokenContract, msg.sender);
+    }
+
+    function changeRegistry(address registryContract) external onlyAdmin {
+        require(registryContract != address(0), 'Registry cannot be zero address');
+        registry = Registry(registryContract);
+        emit RegistryContractChanged(registryContract, msg.sender);
+    }
 }

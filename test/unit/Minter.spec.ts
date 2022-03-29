@@ -121,4 +121,99 @@ describe('unit/Minter', () => {
       });
     });
   });
+
+  describe('#changeDAOContract', () => {
+    let subject: (_daoContract: Wallet | string, _sender: Wallet) => Promise<any>;
+
+    before(() => {
+      subject = (_daoContract: Wallet | string, _sender: Wallet) =>
+        context.minter
+          .connect(_sender)
+          .changeDAOContract(typeof _daoContract === 'string' ? _daoContract : _daoContract.address);
+    });
+
+    describe('works and', () => {
+      it('emits the dao contract changed event', async () => {
+        await expect(subject(actors.anyone(), actors.adminFirst()))
+          .to.emit(context.minter, 'DAOContractChanged')
+          .withArgs(actors.anyone().address, actors.adminFirst().address);
+      });
+
+      // TODO: check if DAO is changed
+    });
+
+    describe('fails when', () => {
+      it('not called by an admin address', async () => {
+        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
+      });
+
+      it('trying to set zero address as collector', async () => {
+        await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
+      });
+    });
+  });
+
+  describe('#changeCSTKTokenContract', () => {
+    let subject: (_cstkTokenContract: Wallet | string, _sender: Wallet) => Promise<any>;
+
+    before(() => {
+      subject = (_cstkTokenContract: Wallet | string, _sender: Wallet) =>
+        context.minter
+          .connect(_sender)
+          .changeCSTKTokenContract(
+            typeof _cstkTokenContract === 'string' ? _cstkTokenContract : _cstkTokenContract.address
+          );
+    });
+
+    describe('works and', () => {
+      it('emits the cstk contract changed event', async () => {
+        await expect(subject(actors.anyone(), actors.adminFirst()))
+          .to.emit(context.minter, 'CSTKTokenContractChanged')
+          .withArgs(actors.anyone().address, actors.adminFirst().address);
+      });
+
+      // TODO: check if the CSTK token contract is changed
+    });
+
+    describe('fails when', () => {
+      it('not called by an admin address', async () => {
+        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
+      });
+
+      it('trying to set zero address as collector', async () => {
+        await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
+      });
+    });
+  });
+
+  describe('#changeRegistry', () => {
+    let subject: (_registryContract: Wallet | string, _sender: Wallet) => Promise<any>;
+
+    before(() => {
+      subject = (_registryContract: Wallet | string, _sender: Wallet) =>
+        context.minter
+          .connect(_sender)
+          .changeRegistry(typeof _registryContract === 'string' ? _registryContract : _registryContract.address);
+    });
+
+    describe('works and', () => {
+      it('emits the registry contract changed event', async () => {
+        await expect(subject(actors.anyone(), actors.adminFirst()))
+          .to.emit(context.minter, 'RegistryContractChanged')
+          .withArgs(actors.anyone().address, actors.adminFirst().address);
+      });
+
+      // TODO: check if the Registry contract is changed
+    });
+
+    describe('fails when', () => {
+      it('not called by an admin address', async () => {
+        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
+      });
+
+      it('trying to set zero address as collector', async () => {
+        await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
+      });
+    });
+  });
 });

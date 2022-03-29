@@ -34,6 +34,21 @@ contract IMinter {
     /// @param beneficiary The beneficiary of the minted CSTK tokens
     function pay(address beneficiary) external payable;
 
+    /// @notice Change the address of the DAO that mints the tokens.
+    /// @dev Must be called by an Admin account
+    /// @param daoContract The new DAO contract address
+    function changeDAOContract(address daoContract) external;
+
+    /// @notice Change the address of the CSTK token contract.
+    /// @dev Must be called by an Admin account.
+    /// @param cstkTokenContract The new CSTK token contract address
+    function changeCSTKTokenContract(address cstkTokenContract) external;
+
+    /// @notice Change the address of the Registry.
+    /// @dev Must be called by an Admin account
+    /// @param registryContract The new Registry contract address
+    function changeRegistry(address registryContract) external;
+
     /// @dev Event emitted when a payment of eth is received by the Minter
     /// @param sender The account making the payment
     /// @param amount The amount of wei received
@@ -51,6 +66,21 @@ contract IMinter {
 
     /// @dev Event emitted when the collector address is changed
     /// @param collector The new collector address
-    /// @param admin The admin that made the change
-    event CollectorChanged(address indexed collector, address admin);
+    /// @param admin The admin account that made the change
+    event CollectorChanged(address collector, address admin);
+
+    /// @dev Event emitted when the DAO contract is changed
+    /// @param daoContract The address of the new DAO contract
+    /// @param admin The admin account that made the change
+    event DAOContractChanged(address daoContract, address admin);
+
+    /// @dev Event emitted when the CSTK token contract is changed
+    /// @param cstkTokenContract The address of the new CSTK Token contract
+    /// @param admin The admin account that made the change
+    event CSTKTokenContractChanged(address cstkTokenContract, address admin);
+
+    /// @dev Event emitted when the Registry contract is changed
+    /// @param registryContract The address of the new Registry contract
+    /// @param admin The admin account that made the change
+    event RegistryContractChanged(address registryContract, address admin);
 }
