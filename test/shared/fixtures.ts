@@ -1,4 +1,4 @@
-import { BigNumberish, Wallet } from 'ethers';
+import { BigNumberish } from 'ethers';
 import { ethers, waffle } from 'hardhat';
 import { Fixture } from 'ethereum-waffle';
 
@@ -10,9 +10,9 @@ import {
   TestMintable__factory,
   Registry__factory,
   IERC20,
-  Minter,
-  Minter__factory,
+  TestNoopMinter__factory,
   IMintable,
+  IMinter,
 } from '../../typechain-types';
 
 import { ActorFixture } from './actors';
@@ -25,7 +25,7 @@ const { abi: RegistryABI, bytecode: RegistryBytecode } = Registry__factory;
 const { abi: AdminRoleMockABI, bytecode: AdminRoleMockBytecode } = AdminRoleMock__factory;
 const { abi: TestMintableABI, bytecode: TestMintableBytecode } = TestMintable__factory;
 const { abi: TestERC20ABI, bytecode: TestERC20Bytecode } = TestERC20__factory;
-const { abi: MinterABI, bytecode: MinterBytecode } = Minter__factory;
+const { abi: TestMinterABI, bytecode: TestMinterBytecode } = TestNoopMinter__factory;
 
 export type AdminRoleMockFixture = {
   adminRole: AdminRoleMock;
@@ -171,7 +171,7 @@ export const registryFixture: Fixture<RegistryFixture> = async ([wallet]) => {
 };
 
 export type MinterFixture = {
-  minter: Minter;
+  minter: IMinter;
   token: IERC20;
   dao: IMintable;
   params: {
@@ -201,11 +201,11 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
   const minter = (await waffle.deployContract(
     wallet,
     {
-      abi: MinterABI,
-      bytecode: MinterBytecode,
+      abi: TestMinterABI,
+      bytecode: TestMinterBytecode,
     },
     [admins, dao.address, registry.address, token.address]
-  )) as Minter;
+  )) as IMinter;
 
   const collector = dao.address;
   await minter.changeCollector(collector);

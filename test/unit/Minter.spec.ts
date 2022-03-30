@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BigNumberish, constants, utils, Wallet } from 'ethers';
+import { BigNumber, BigNumberish, constants, ContractTransaction, utils, Wallet } from 'ethers';
 import { ActorFixture, MinterFixture, createFixtureLoader, provider, minterFixture } from '../shared';
 import { LoadFixtureFunction } from '../types';
 
@@ -31,35 +31,52 @@ describe('unit/Minter', () => {
 
   describe('#pay', () => {
     let subject: (_beneficiary: Wallet | string, _sender: Wallet, _value: BigNumberish) => Promise<any>;
+    let setRatio: (_nominator: BigNumberish, _denominator: BigNumberish) => Promise<any>;
+    let testSent: BigNumber;
+    let testMinted: BigNumber;
 
     before(() => {
       subject = (_beneficiary: Wallet | string, _sender: Wallet, _value: BigNumberish) =>
         context.minter
           .connect(_sender)
           .pay(typeof _beneficiary === 'string' ? _beneficiary : _beneficiary.address, { value: _value });
+
+      setRatio = (_nominator: BigNumberish, _denominator: BigNumberish) =>
+        context.minter.connect(actors.adminFirst()).setRatio(_nominator, _denominator);
+
+      testSent = parseEther('1.0');
+      testMinted = testSent.div(2);
+    });
+
+    beforeEach(async () => {
+      await await setRatio('1', '2'); // Ratio 1/2
     });
 
     describe('works and', () => {
-      it('transfers ETH to the collector', async () => {
-        const val = parseEther('1.0');
-        await subject(actors.contributorFirst(), actors.anyone(), val);
-        expect(await provider.getBalance(context.state.collector)).to.be.eq(val);
+      it('emits a payment received event', async () => {
+        await expect(subject(actors.contributorFirst(), actors.anyone(), testSent))
+          .to.emit(context.minter, 'PaymentReceived')
+          .withArgs(actors.contributorFirst().address, testSent);
+      });
+
+      it('emits a noop minted event', async () => {
+        await expect(subject(actors.contributorFirst(), actors.anyone(), testSent))
+          .to.emit(context.minter, 'NoopMinted')
+          .withArgs(actors.contributorFirst().address, testMinted);
+      });
+
+      it('transfers all ETH to the collector', async () => {
+        await subject(actors.contributorFirst(), actors.anyone(), testSent);
+        expect(await provider.getBalance(context.state.collector)).to.be.eq(testSent);
+      });
+    });
+
+    describe('fails when', () => {
+      it('trying to pay 0 ETH', async () => {
+        await expect(subject(actors.anyone(), actors.anyone(), '0')).to.be.reverted;
       });
     });
   });
-
-  // describe('#mint', () => {
-  //   let subject: (_recipient: Wallet | string, _toMint: BigNumberish, _sender: Wallet) => Promise<any>;
-
-  //   before(() => {
-  //     subject = (_recipient: Wallet | string, _toMint: BigNumberish, _sender: Wallet) =>
-  //       context.minter.connect(_sender).mint(typeof _recipient === 'string' ? _recipient : _recipient.address, _toMint);
-  //   });
-
-  //   describe('works and', () => {
-  //     it('sets pending balance on the new contributor', async () => {});
-  //   });
-  // });
 
   describe('#setRatio', async () => {
     let subject: (_numerator: BigNumberish, _denominator: BigNumberish, _sender: Wallet) => Promise<any>;
