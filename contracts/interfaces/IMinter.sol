@@ -4,6 +4,28 @@ pragma solidity ^0.5.17;
 /// @title IMinter
 /// @notice CSTK token minter interface
 contract IMinter {
+    //// ADMIN FUNCTIONS:
+
+    /// @notice Change the address of the collector.
+    /// @dev Can only be called by an Admin account.
+    /// @param collector The collector address.
+    function changeCollector(address payable collector) external;
+
+    /// @notice Change the address of the DAO that mints the tokens.
+    /// @dev Must be called by an Admin account
+    /// @param dao The new DAO contract address
+    function changeDAOContract(address dao) external;
+
+    /// @notice Change the address of the CSTK token contract.
+    /// @dev Must be called by an Admin account.
+    /// @param cstkToken The new CSTK token contract address
+    function changeCSTKTokenContract(address cstkToken) external;
+
+    /// @notice Change the address of the Registry.
+    /// @dev Must be called by an Admin account
+    /// @param registry The new Registry contract address
+    function changeRegistry(address registry) external;
+
     /// @notice Set the ratio (numerator/denominator) used for minting calculation.
     /// @dev Can only be called by an Admin account.
     /// @param _numerator The ratio numerator
@@ -22,10 +44,7 @@ contract IMinter {
     /// @param toMint The amount of CSTK we expect to mint
     function mint(address recipient, uint256 toMint) external;
 
-    /// @notice Change the address of the collector.
-    /// @dev Can only be called by an Admin account.
-    /// @param _collector The collector address.
-    function changeCollector(address payable _collector) external;
+    //// EXTERNAL FUNCTIONS:
 
     /// @notice Pay eth and mint the appropiate amount of CSTK tokens to the beneficiary.
     ///
@@ -34,20 +53,33 @@ contract IMinter {
     /// @param beneficiary The beneficiary of the minted CSTK tokens
     function pay(address beneficiary) external payable;
 
-    /// @notice Change the address of the DAO that mints the tokens.
-    /// @dev Must be called by an Admin account
-    /// @param daoContract The new DAO contract address
-    function changeDAOContract(address daoContract) external;
+    //// VIEW FUNCTIONS:
 
-    /// @notice Change the address of the CSTK token contract.
-    /// @dev Must be called by an Admin account.
-    /// @param cstkTokenContract The new CSTK token contract address
-    function changeCSTKTokenContract(address cstkTokenContract) external;
+    /// @notice Returns the value of the nominator used by the mint ratio.
+    /// @return The value of the nominator
+    function numerator() external view returns (uint256);
 
-    /// @notice Change the address of the Registry.
-    /// @dev Must be called by an Admin account
-    /// @param registryContract The new Registry contract address
-    function changeRegistry(address registryContract) external;
+    /// @notice Returns the value of the denominator used by the mint ratio.
+    /// @return The value of the denominator
+    function denominator() external view returns (uint256);
+
+    /// @notice Returns the value of the mint ratio calculated as fixed point division of NUMERATOR/DENOMINATOR.
+    /// @return The calculated value of the ratio
+    function ratio() external view returns (uint256);
+
+    /// @notice Returns the address of the collector.
+    /// @return The address of the collector
+    function colector() external view returns (address);
+
+    /// @notice Returns the address of the registry contract.
+    /// @return The address of the registry contract
+    function registry() external view returns (address);
+
+    /// @notice Returns the address of the CSTK token cotnract.
+    /// @return The address of the CSTK token contract
+    function cstkToken() external view returns (address);
+
+    //// EVENTS:
 
     /// @dev Event emitted when a payment of eth is received by the Minter
     /// @param sender The account making the payment

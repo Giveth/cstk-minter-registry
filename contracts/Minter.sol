@@ -10,38 +10,69 @@ import './interfaces/IMintable.sol';
 import './registry/Registry.sol';
 import './registry/AdminRole.sol';
 
+/// @title Minter
+/// @notice CSTK token minter implementation
+/// @author Giveth developers
 contract Minter is IMinter, AdminRole {
     using Address for address payable;
     using SafeMath for uint256;
 
     uint256 private constant MAX_TRUST_DENOMINATOR = 10000000;
 
-    Registry internal registry;
-    IERC20 internal cstkToken;
-    IMintable internal dao;
+    //// STORAGE:
 
-    address public authorizedKey; // NOTE: use of this storage slot is reserved
+    address internal registryContract;
+    address internal cstkTokenContract;
+    address internal daoContract;
 
-    uint256 public numerator;
-    uint256 public denominator;
+    uint256 internal numeratorVal;
+    uint256 internal denominatorVal;
 
-    address payable public collector;
+    address payable internal collectorAddr;
+
+    //// CONSTRUCTOR:
 
     constructor(
-        address[] memory _authorizedKeys,
-        address _daoAddress,
-        address _registryAddress,
-        address _cstkTokenAddress
-    ) public AdminRole(_authorizedKeys) {
-        dao = IMintable(_daoAddress);
-        registry = Registry(_registryAddress);
-        cstkToken = IERC20(_cstkTokenAddress);
+        address[] memory authorizedKeys,
+        address dao,
+        address registry,
+        address cstkToken
+    ) public AdminRole(authorizedKeys) {
+        daoContract = dao;
+        registryContract = registry;
+        cstkTokenContract = cstkToken;
     }
 
-    function setRatio(uint256 _numerator, uint256 _denominator) external onlyAdmin {
-        numerator = _numerator;
-        denominator = _denominator;
-        emit RatioChanged(_numerator, _denominator);
+    //// ADMIN FUNCTIONS:
+
+    function changeCollector(address payable collector) external onlyAdmin {
+        require(collector != address(0), 'Collector cannot be zero address');
+        collectorAddr = collector;
+        emit CollectorChanged(collectorAddr, msg.sender);
+    }
+
+    function changeDAOContract(address dao) external onlyAdmin {
+        require(dao != address(0), 'DAO cannot be address zero');
+        daoContract = dao;
+        emit DAOContractChanged(daoContract, msg.sender);
+    }
+
+    function changeCSTKTokenContract(address cstkToken) external onlyAdmin {
+        require(cstkToken != address(0), 'CSTK token cannot be zero address');
+        cstkTokenContract = cstkToken;
+        emit CSTKTokenContractChanged(cstkTokenContract, msg.sender);
+    }
+
+    function changeRegistry(address registry) external onlyAdmin {
+        require(registry != address(0), 'Registry cannot be zero address');
+        registryContract = registry;
+        emit RegistryContractChanged(registryContract, msg.sender);
+    }
+
+    function setRatio(uint256 numerator, uint256 denominator) external onlyAdmin {
+        numeratorVal = numerator;
+        denominatorVal = denominator;
+        emit RatioChanged(numeratorVal, denominatorVal);
     }
 
     function mint(address recipient, uint256 toMint) external onlyAdmin {
@@ -49,22 +80,62 @@ contract Minter is IMinter, AdminRole {
         emit Mint(recipient, toMint);
     }
 
+    //// EXTERNAL FUNCTIONS:
+
+    function pay(address beneficiary) external payable {
+        // Get the amount to mint based on the numerator/denominator.
+        uint256 toMint = msg.value.mul(numeratorVal).div(denominatorVal);
+        _mint(beneficiary, toMint);
+
+        collectorAddr.sendValue(msg.value);
+
+        emit PaymentReceived(beneficiary, toMint);
+    }
+
+    //// VIEW FUNCTIONS:
+
+    function numerator() external view returns (uint256) {
+        return numeratorVal;
+    }
+
+    function denominator() external view returns (uint256) {
+        return denominatorVal;
+    }
+
+    function ratio() external view returns (uint256) {
+        return numeratorVal.div(denominatorVal);
+    }
+
+    function colector() external view returns (address) {
+        return collectorAddr;
+    }
+
+    function registry() external view returns (address) {
+        return registryContract;
+    }
+
+    function cstkToken() external view returns (address) {
+        return cstkTokenContract;
+    }
+
+    /// INTERNAL FUNCTIONS:
+
     function _mint(address recipient, uint256 toMint) internal {
         // Determine the maximum supply of the CSTK token.
-        uint256 totalSupply = cstkToken.totalSupply();
+        uint256 totalSupply = IERC20(cstkTokenContract).totalSupply();
 
         // Get the max trust amount for the recipient acc from the Registry.
-        uint256 maxTrust = registry.getMaxTrust(recipient);
+        uint256 maxTrust = Registry(registryContract).getMaxTrust(recipient);
 
         // Get the current CSTK balance of the recipient account.
-        uint256 recipientBalance = cstkToken.balanceOf(recipient);
+        uint256 recipientBalance = IERC20(cstkTokenContract).balanceOf(recipient);
 
         // It's activating membership too
         if (recipientBalance == 0) {
-            uint256 pendingBalance = registry.getPendingBalance(recipient);
+            uint256 pendingBalance = Registry(registryContract).getPendingBalance(recipient);
             toMint = toMint + pendingBalance;
             if (pendingBalance != 0) {
-                registry.clearPendingBalance(recipient);
+                Registry(registryContract).clearPendingBalance(recipient);
             }
         }
 
@@ -80,41 +151,7 @@ contract Minter is IMinter, AdminRole {
 
         // If there is anything to mint, mint it to the recipient.
         if (toMint > 0) {
-            dao.mint(recipient, toMint);
+            IMintable(daoContract).mint(recipient, toMint);
         }
-    }
-
-    function pay(address beneficiary) external payable {
-        // Get the amount to mint based on the numerator/denominator.
-        uint256 toMint = msg.value.mul(numerator).div(denominator);
-        // _mint(beneficiary, toMint);
-
-        collector.sendValue(msg.value);
-
-        emit PaymentReceived(beneficiary, toMint);
-    }
-
-    function changeCollector(address payable _collector) external onlyAdmin {
-        require(_collector != address(0), 'Collector cannot be zero address');
-        collector = _collector;
-        emit CollectorChanged(_collector, msg.sender);
-    }
-
-    function changeDAOContract(address daoContract) external onlyAdmin {
-        require(daoContract != address(0), 'DAO cannot be address zero');
-        dao = IMintable(daoContract);
-        emit DAOContractChanged(daoContract, msg.sender);
-    }
-
-    function changeCSTKTokenContract(address cstkTokenContract) external onlyAdmin {
-        require(cstkTokenContract != address(0), 'CSTK token cannot be zero address');
-        cstkToken = IERC20(cstkTokenContract);
-        emit CSTKTokenContractChanged(cstkTokenContract, msg.sender);
-    }
-
-    function changeRegistry(address registryContract) external onlyAdmin {
-        require(registryContract != address(0), 'Registry cannot be zero address');
-        registry = Registry(registryContract);
-        emit RegistryContractChanged(registryContract, msg.sender);
     }
 }

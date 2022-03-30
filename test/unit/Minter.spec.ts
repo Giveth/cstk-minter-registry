@@ -107,7 +107,7 @@ describe('unit/Minter', () => {
 
       it('changes the collector', async () => {
         await subject(actors.anyone(), actors.adminFirst());
-        expect(await context.minter.collector()).to.be.eq(actors.anyone().address);
+        expect(await context.minter.colector()).to.be.eq(actors.anyone().address);
       });
     });
 
