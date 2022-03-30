@@ -71,6 +71,10 @@ contract IMinter {
     /// @return The address of the collector
     function colector() external view returns (address);
 
+    /// @notice Returns the address of the DAO contract.
+    /// @return The address of the DAO contract
+    function dao() external view returns (address);
+
     /// @notice Returns the address of the registry contract.
     /// @return The address of the registry contract
     function registry() external view returns (address);

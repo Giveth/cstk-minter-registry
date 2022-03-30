@@ -116,6 +116,10 @@ contract Minter is IMinter, AdminRole {
         return registryContract;
     }
 
+    function dao() external view returns (address) {
+        return daoContract;
+    }
+
     function cstkToken() external view returns (address) {
         return cstkTokenContract;
     }

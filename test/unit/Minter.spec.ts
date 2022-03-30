@@ -140,31 +140,38 @@ describe('unit/Minter', () => {
   });
 
   describe('#changeDAOContract', () => {
-    let subject: (_daoContract: Wallet | string, _sender: Wallet) => Promise<any>;
+    let subject: (_daoContract: string, _sender: Wallet) => Promise<any>;
+    let check: () => Promise<string>;
+    let testDAO: string;
 
     before(() => {
-      subject = (_daoContract: Wallet | string, _sender: Wallet) =>
-        context.minter
-          .connect(_sender)
-          .changeDAOContract(typeof _daoContract === 'string' ? _daoContract : _daoContract.address);
+      subject = (_daoContract: string, _sender: Wallet) =>
+        context.minter.connect(_sender).changeDAOContract(_daoContract);
+
+      check = context.minter.dao;
+
+      testDAO = context.dao.address;
     });
 
     describe('works and', () => {
       it('emits the dao contract changed event', async () => {
-        await expect(subject(actors.anyone(), actors.adminFirst()))
+        await expect(subject(testDAO, actors.adminFirst()))
           .to.emit(context.minter, 'DAOContractChanged')
-          .withArgs(actors.anyone().address, actors.adminFirst().address);
+          .withArgs(testDAO, actors.adminFirst().address);
       });
 
-      // TODO: check if DAO is changed
+      it('changes the dao contract', async () => {
+        await subject(testDAO, actors.adminFirst());
+        expect(await check()).to.be.eq(testDAO);
+      });
     });
 
     describe('fails when', () => {
       it('not called by an admin address', async () => {
-        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
+        await expect(subject(testDAO, actors.anyone())).to.be.reverted;
       });
 
-      it('trying to set zero address as collector', async () => {
+      it('trying to set zero address as dao contract', async () => {
         await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
       });
     });
