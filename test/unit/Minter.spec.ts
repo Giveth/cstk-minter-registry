@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BigNumber, BigNumberish, constants, ContractTransaction, utils, Wallet } from 'ethers';
+import { BigNumber, BigNumberish, constants, utils, Wallet } from 'ethers';
 import { ActorFixture, MinterFixture, createFixtureLoader, provider, minterFixture } from '../shared';
 import { LoadFixtureFunction } from '../types';
 
@@ -80,10 +80,17 @@ describe('unit/Minter', () => {
 
   describe('#setRatio', async () => {
     let subject: (_numerator: BigNumberish, _denominator: BigNumberish, _sender: Wallet) => Promise<any>;
+    let testNumerator: BigNumber;
+    let testDenominator: BigNumber;
+    let testRatio: BigNumber;
 
     before(() => {
       subject = (_numerator: BigNumberish, _denominator: BigNumberish | string, _sender: Wallet) =>
         context.minter.connect(_sender).setRatio(_numerator, _denominator);
+
+      testNumerator = BigNumber.from(1);
+      testDenominator = BigNumber.from(10);
+      testRatio = testNumerator.div(testDenominator);
     });
 
     describe('works and', () => {
@@ -93,8 +100,9 @@ describe('unit/Minter', () => {
 
       it('changes the ratio', async () => {
         await subject(1, 10, actors.adminFirst());
-        expect(await context.minter.numerator()).to.be.eq(1);
-        expect(await context.minter.denominator()).to.be.eq(10);
+        expect(await context.minter.numerator()).to.be.eq(testNumerator);
+        expect(await context.minter.denominator()).to.be.eq(testDenominator);
+        expect(await context.minter.ratio()).to.be.eq(testRatio);
       });
     });
 
@@ -150,7 +158,7 @@ describe('unit/Minter', () => {
 
       check = context.minter.dao;
 
-      testDAO = context.dao.address;
+      testDAO = actors.anyone().address;
     });
 
     describe('works and', () => {
@@ -178,64 +186,76 @@ describe('unit/Minter', () => {
   });
 
   describe('#changeCSTKTokenContract', () => {
-    let subject: (_cstkTokenContract: Wallet | string, _sender: Wallet) => Promise<any>;
+    let subject: (string, _sender: Wallet) => Promise<any>;
+    let check: () => Promise<string>;
+    let testCSTKToken: string;
 
     before(() => {
-      subject = (_cstkTokenContract: Wallet | string, _sender: Wallet) =>
-        context.minter
-          .connect(_sender)
-          .changeCSTKTokenContract(
-            typeof _cstkTokenContract === 'string' ? _cstkTokenContract : _cstkTokenContract.address
-          );
+      subject = (_cstkTokenContract: string, _sender: Wallet) =>
+        context.minter.connect(_sender).changeCSTKTokenContract(_cstkTokenContract);
+
+      check = context.minter.cstkToken;
+
+      testCSTKToken = actors.anyone().address; // any address
     });
 
     describe('works and', () => {
       it('emits the cstk contract changed event', async () => {
-        await expect(subject(actors.anyone(), actors.adminFirst()))
+        await expect(subject(testCSTKToken, actors.adminFirst()))
           .to.emit(context.minter, 'CSTKTokenContractChanged')
-          .withArgs(actors.anyone().address, actors.adminFirst().address);
+          .withArgs(testCSTKToken, actors.adminFirst().address);
       });
 
-      // TODO: check if the CSTK token contract is changed
+      it('changes the cstk token contract', async () => {
+        await subject(testCSTKToken, actors.adminFirst());
+        expect(await check()).to.be.eq(testCSTKToken);
+      });
     });
 
     describe('fails when', () => {
       it('not called by an admin address', async () => {
-        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
+        await expect(subject(testCSTKToken, actors.anyone())).to.be.reverted;
       });
 
-      it('trying to set zero address as collector', async () => {
+      it('trying to set zero address as the cstk token contract', async () => {
         await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
       });
     });
   });
 
   describe('#changeRegistry', () => {
-    let subject: (_registryContract: Wallet | string, _sender: Wallet) => Promise<any>;
+    let subject: (_registryContract: string, _sender: Wallet) => Promise<any>;
+    let check: () => Promise<string>;
+    let testRegistry: string;
 
     before(() => {
-      subject = (_registryContract: Wallet | string, _sender: Wallet) =>
-        context.minter
-          .connect(_sender)
-          .changeRegistry(typeof _registryContract === 'string' ? _registryContract : _registryContract.address);
+      subject = (_registryContract: string, _sender: Wallet) =>
+        context.minter.connect(_sender).changeRegistry(_registryContract);
+
+      check = context.minter.registry;
+
+      testRegistry = actors.anyone().address;
     });
 
     describe('works and', () => {
       it('emits the registry contract changed event', async () => {
-        await expect(subject(actors.anyone(), actors.adminFirst()))
+        await expect(subject(testRegistry, actors.adminFirst()))
           .to.emit(context.minter, 'RegistryContractChanged')
-          .withArgs(actors.anyone().address, actors.adminFirst().address);
+          .withArgs(testRegistry, actors.adminFirst().address);
       });
 
-      // TODO: check if the Registry contract is changed
+      it('changes the registry contract', async () => {
+        await subject(testRegistry, actors.adminFirst());
+        expect(await check()).to.be.eq(testRegistry);
+      });
     });
 
     describe('fails when', () => {
       it('not called by an admin address', async () => {
-        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
+        await expect(subject(testRegistry, actors.anyone())).to.be.reverted;
       });
 
-      it('trying to set zero address as collector', async () => {
+      it('trying to set zero address as the registry contract', async () => {
         await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
       });
     });
