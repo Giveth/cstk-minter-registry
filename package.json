@@ -35,7 +35,9 @@
     "size-contracts": "hardhat compile && hardhat size-contracts",
     "test": "hardhat test",
     "clear-cache": "rm -rf artifacts/ cache/ typechain/",
-    "coverage": "RUN_COVERAGE=1 hardhat coverage"
+    "coverage": "RUN_COVERAGE=1 hardhat coverage",
+    "deploy:minter:void": "hardhat run --network hardhat scripts/deploy/minter.ts",
+    "deploy:minter:goerli": "hardhat run --network goerli scripts/deploy/minter.ts"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
@@ -48,10 +50,12 @@
     "@types/lodash": "^4.14.178",
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.16",
+    "@types/prompts": "^2.0.14",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "chai": "^4.3.6",
     "console-log-level": "^1.4.1",
+    "dotenv": "^16.0.0",
     "eslint": "^8.8.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-unused-imports": "^2.0.0",
@@ -66,6 +70,7 @@
     "prettier": "^2.5.1",
     "prettier-check": "^2.0.0",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "prompts": "^2.4.2",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.18",
