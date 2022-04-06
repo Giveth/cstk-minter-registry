@@ -1,11 +1,11 @@
 import { ethers, network } from 'hardhat';
 import { log } from '../utils/logging';
 import dotenv from 'dotenv';
-import { getDefaultConstructionParams, getDefaultOwner } from './minter.config';
+import { getDefaultConstructionParams, getDefaultOwner, getDefaultRatio, MinterRatio } from './minter.config';
 import { confirmOK } from '../utils/prompt';
 import { Minter } from '../../typechain-types';
 
-const { formatEther } = ethers.utils;
+const { formatEther, getAddress } = ethers.utils;
 
 const pretty = (obj: any) => JSON.stringify(obj, null, 4);
 
@@ -16,10 +16,23 @@ const mustAuthorizedKey = async (minter: Minter, account: string) => {
   }
 };
 
-const mustMatch = (name: string, expected: string, actual: string) => {
+const mustMatchAddress = (name: string, expected: string, actual: string) => {
   log.info(`Checking ${name} address...`);
-  if (expected !== actual) {
+  if (getAddress(expected) !== getAddress(actual)) {
     throw Error(`Expected ${name} value ${expected}, got ${actual}`);
+  }
+};
+
+const mustMatchRatio = async (minter: Minter, expected: MinterRatio) => {
+  log.info('Checking minter ratio');
+  const num = await minter.numerator();
+  const den = await minter.denominator();
+
+  if (!expected.numerator.eq(num)) {
+    throw Error(`Expected numerator to be eq ${expected.numerator}, got ${num}`);
+  }
+  if (!expected.denominator.eq(den)) {
+    throw Error(`Expected denominator to be eq ${expected.denominator}, got ${den}`);
   }
 };
 
@@ -38,6 +51,7 @@ const main = async () => {
   const balanceETH = await deployer.getBalance();
 
   const params = getDefaultConstructionParams();
+  const ratio = getDefaultRatio();
   const newOwner = getDefaultOwner();
 
   log.info('\n');
@@ -56,6 +70,11 @@ const main = async () => {
 
   log.info('Construction parameters:');
   log.info(pretty(params));
+  log.info('\n');
+
+  log.info('Initial ratio:');
+  log.info(`numerator: ${ratio.numerator.toString()}`);
+  log.info(`denominator: ${ratio.denominator.toString()}`);
   log.info('\n');
 
   log.info('Contract ownership will be transferred to:');
@@ -98,25 +117,37 @@ const main = async () => {
     await mustAuthorizedKey(minter, aKey);
   }
 
-  mustMatch('DAO address', params.dao, await minter.dao());
-  mustMatch('CSTK token address', params.cstkToken, await minter.cstkToken());
-  mustMatch('Registry address', params.registry, await minter.registry());
+  mustMatchAddress('DAO address', params.dao, await minter.dao());
+  mustMatchAddress('CSTK token address', params.cstkToken, await minter.cstkToken());
+  mustMatchAddress('Registry address', params.registry, await minter.registry());
 
   log.info('\n');
-  log.info('All checks passed, GM!!');
+  log.info('Check complete!');
+
+  log.info('Setting initial ratio:');
+  log.info('\n');
+
+  await minter.setRatio(ratio.numerator, ratio.denominator);
+
+  log.info('Ratio set');
+
+  await mustMatchRatio(minter, ratio);
+
+  log.info('\n');
+  log.info('Check complete!');
   log.info('\n');
 
   log.info('==============================================');
   log.info('Transferring contract ownership:');
   log.info('==============================================');
 
-  log.info('\n');
-
   await minter.transferOwnership(newOwner);
 
+  log.info('\n');
   log.info('Ownership transfer complete');
+  log.info('\n');
 
-  mustMatch('Owner', newOwner, await minter.owner());
+  mustMatchAddress('Owner', newOwner, await minter.owner());
 
   log.info('\n');
   log.info('Ownership transferred, GM!!');
