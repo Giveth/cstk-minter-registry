@@ -108,7 +108,7 @@ contract Minter is IMinter, AdminRole {
         return numeratorVal.div(denominatorVal);
     }
 
-    function colector() external view returns (address) {
+    function collector() external view returns (address) {
         return collectorAddr;
     }
 

@@ -69,7 +69,7 @@ contract IMinter {
 
     /// @notice Returns the address of the collector.
     /// @return The address of the collector
-    function colector() external view returns (address);
+    function collector() external view returns (address);
 
     /// @notice Returns the address of the DAO contract.
     /// @return The address of the DAO contract
