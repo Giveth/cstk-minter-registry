@@ -83,6 +83,10 @@ const config: HardhatUserConfig = {
       url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [`${deployKey}`],
     },
+    gnosis: {
+      url: 'https://rpc.gnosischain.com/',
+      accounts: [`${deployKey}`],
+    },
   },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],

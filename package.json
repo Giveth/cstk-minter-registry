@@ -37,7 +37,8 @@
     "clear-cache": "rm -rf artifacts/ cache/ typechain/",
     "coverage": "RUN_COVERAGE=1 hardhat coverage",
     "deploy:minter:void": "hardhat run --network hardhat scripts/deploy/minter.ts",
-    "deploy:minter:goerli": "hardhat run --network goerli scripts/deploy/minter.ts"
+    "deploy:minter:goerli": "hardhat run --network goerli scripts/deploy/minter.ts",
+    "deploy:minter:gnosis": "hardhat run --network gnosis scripts/deploy/minter.ts"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",

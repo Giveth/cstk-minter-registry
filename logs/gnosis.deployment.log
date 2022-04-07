@@ -1,0 +1,86 @@
+===============================
+== Deploying Minter contract ==
+===============================
+
+
+Deploying to network: gnosis
+
+
+Deploying from address:
+===> 0x793a32F28a620b40BF90DD9cEeFB0B6a85f78550
+Balance: 2.0 ETH
+
+
+Construction parameters:
+{
+    "authorizedKeys": [
+        "0x839395e20bbB182fa440d08F850E6c7A8f6F0780",
+        "0xa32aECda752cF4EF89956e83d60C04835d4FA867"
+    ],
+    "cstkToken": "0xc4fbe68522ba81a28879763c3ee33e08b13c499e",
+    "dao": "0xa18effbceb3b6bfd914bac1c08103fc93b5d4b45",
+    "registry": "0x28512FB7681c8615aef25a8EF3bcb90aFAC502cB"
+}
+
+
+Initial ratio:
+numerator: 5
+denominator: 2000000000000000000
+
+
+Contract ownership will be transferred to:
+===> 0x839395e20bbB182fa440d08F850E6c7A8f6F0780
+
+
+✔ Are you sure you want to proceed? … yes
+
+
+
+
+Started deployment of Minter
+============================
+
+Deployment tx hash: 0xcf53acca6bc4939a3618a696629168fc3d923185054c817bfe6828bfbab1929e
+
+
+Waiting for confirmations..
+
+
+Deployment OK
+
+
+Minter deployed to:
+===>  0xA31eA20253e40eFF625aB3f14357290040A06a21
+
+
+Checking deployed contract state:
+
+
+Checking if '0x839395e20bbB182fa440d08F850E6c7A8f6F0780' is an authorized key...
+Checking if '0xa32aECda752cF4EF89956e83d60C04835d4FA867' is an authorized key...
+Checking DAO address...
+Checking CSTK token address...
+Checking Registry address...
+
+Setting inital ratio
+====================
+
+Transaction hash '0x6de4b1f32f8a93460983cee897e7ed566f50df2194f79d1821b61386cef6cfb2'
+Waiting for confirmations...
+Checking minter ratio
+
+
+Ratio set OK
+
+Transferring contract ownership:
+================================
+Transaction hash: 0xaaf098b3b563cfdaa9e52b747b3f11433ae546402e4ee3d9d8a3aef04882e39f
+Waiting for confirmations...
+Ownership transfer complete
+Checking Owner address...
+
+
+Owner set OK
+
+
+Deployment completed, GM!!
