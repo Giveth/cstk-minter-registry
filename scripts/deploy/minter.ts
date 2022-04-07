@@ -84,6 +84,7 @@ const main = async () => {
   await promptForConfirmation();
 
   log.info('\n');
+  log.info('\n');
   log.info('Started deployment of Minter');
   log.info('============================\n');
 
@@ -98,59 +99,56 @@ const main = async () => {
   log.info('\n');
   log.info('Waiting for confirmations..');
 
-  if (network.name !== 'hardhat') await deployTransaction.wait();
+  if (network.name !== 'hardhat') await deployTransaction.wait(2);
 
   log.info('\n');
   log.info('Deployment OK');
   log.info('\n');
 
-  log.info('==============================================');
   log.info('Minter deployed to:');
   log.info(`===>  ${minter.address}`);
-  log.info('==============================================');
 
   log.info('\n');
   log.info('Checking deployed contract state:');
-  log.info('=================================');
+  log.info('\n');
 
   for (const aKey of params.authorizedKeys) {
     await mustAuthorizedKey(minter, aKey);
   }
 
-  mustMatchAddress('DAO address', params.dao, await minter.dao());
-  mustMatchAddress('CSTK token address', params.cstkToken, await minter.cstkToken());
-  mustMatchAddress('Registry address', params.registry, await minter.registry());
+  mustMatchAddress('DAO', params.dao, await minter.dao());
+  mustMatchAddress('CSTK token', params.cstkToken, await minter.cstkToken());
+  mustMatchAddress('Registry', params.registry, await minter.registry());
 
-  log.info('\n');
-  log.info('Check complete!');
+  log.info('\nSetting inital ratio');
+  log.info('====================\n');
 
-  log.info('Setting initial ratio:');
-  log.info('\n');
-
-  await minter.setRatio(ratio.numerator, ratio.denominator);
-
-  log.info('Ratio set');
+  const setRatioTx = await minter.setRatio(ratio.numerator, ratio.denominator);
+  log.info(`Transaction hash '${setRatioTx.hash}'`);
+  log.info('Waiting for confirmations...');
+  if (network.name !== 'hardhat') await setRatioTx.wait(2);
 
   await mustMatchRatio(minter, ratio);
 
   log.info('\n');
-  log.info('Check complete!');
-  log.info('\n');
+  log.info('Ratio set OK');
 
-  log.info('==============================================');
-  log.info('Transferring contract ownership:');
-  log.info('==============================================');
+  log.info('\nTransferring contract ownership:');
+  log.info('================================');
 
-  await minter.transferOwnership(newOwner);
-
-  log.info('\n');
+  const transferOwnershipTx = await minter.transferOwnership(newOwner);
+  log.info(`Transaction hash: ${transferOwnershipTx.hash}`);
+  log.info('Waiting for confirmations...');
+  if (network.name !== 'hardhat') await setRatioTx.wait(2);
   log.info('Ownership transfer complete');
-  log.info('\n');
 
   mustMatchAddress('Owner', newOwner, await minter.owner());
 
   log.info('\n');
-  log.info('Ownership transferred, GM!!');
+  log.info('Owner set OK');
+
+  log.info('\n');
+  log.info('Deployment completed, GM!!');
 };
 
 main().catch((e) => {
