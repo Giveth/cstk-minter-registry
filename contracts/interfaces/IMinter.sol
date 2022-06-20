@@ -39,6 +39,17 @@ contract IMinter {
     /// @param toMint The amount of CSTK we expect to mint
     function mint(address recipient, uint256 toMint) external;
 
+    /// @notice Bridge a donation transaction to the minter contract.abi
+    ///
+    /// @dev Cano only be called by an Admin account.
+    function bridgeDonation(
+        address sender,
+        address token,
+        uint64 receiverID,
+        uint256 amount,
+        bytes32 homeTX
+    ) external;
+
     //// VIEW FUNCTIONS:
 
     /// @notice Returns the value of the nominator used by the mint ratio.
@@ -61,9 +72,9 @@ contract IMinter {
     /// @return The address of the registry contract
     function registry() external view returns (address);
 
-    /// @notice Returns the address of the CSTK token cotnract.
-    /// @return The address of the CSTK token contract
-    function cstkToken() external view returns (address);
+    /// @notice Returns the address of the token cotnract.
+    /// @return The address of the token contract
+    function token() external view returns (address);
 
     //// EVENTS:
 

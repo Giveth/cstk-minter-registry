@@ -25,6 +25,8 @@ contract Minter is IMinter, AdminRole {
     address internal tokenContract;
     address internal daoContract;
 
+    uint256 membershipDues;
+
     uint256 internal numeratorVal;
     uint256 internal denominatorVal;
 
@@ -72,7 +74,13 @@ contract Minter is IMinter, AdminRole {
         emit Mint(recipient, toMint);
     }
 
-    //// EXTERNAL FUNCTIONS:
+    function bridgeDonation(
+        address sender,
+        address token,
+        uint64 receiverID,
+        uint256 amount,
+        bytes32 homeTX
+    ) external onlyAdmin {}
 
     //// VIEW FUNCTIONS:
 
@@ -96,30 +104,52 @@ contract Minter is IMinter, AdminRole {
         return daoContract;
     }
 
-    function cstkToken() external view returns (address) {
+    function token() external view returns (address) {
         return tokenContract;
     }
 
     /// INTERNAL FUNCTIONS:
 
-    function _mint(address recipient, uint256 toMint) internal {
-        // Determine the maximum supply of the CSTK token.
-        uint256 totalSupply = IERC20(tokenContract).totalSupply();
-
+    function _mint(address recipient, uint256 amount) internal {
         // Get the max trust amount for the recipient acc from the Registry.
         uint256 maxTrust = Registry(registryContract).getMaxTrust(recipient);
 
         // Get the current CSTK balance of the recipient account.
         uint256 recipientBalance = IERC20(tokenContract).balanceOf(recipient);
 
-        // It's activating membership too
+        uint256 toMint;
+
+        // Check if we are not an active member:
+        // Active members must have token balance.
         if (recipientBalance == 0) {
-            uint256 pendingBalance = Registry(registryContract).getPendingBalance(recipient);
-            toMint = toMint + pendingBalance;
-            if (pendingBalance != 0) {
-                Registry(registryContract).clearPendingBalance(recipient);
+            // If we are not an active member, check if our application is approved.
+            // Application is approved if we have a maxTrust score.
+            if (maxTrust > 0) {
+                // Check if the deposit is greather than membership dues.
+                if (amount >= membershipDues) {
+                    // If we did pay membership dues, activate the membership:
+                    // Add any pending balance to the mint amount and clear the value.
+                    uint256 pendingBalance = Registry(registryContract).getPendingBalance(recipient);
+
+                    // Mint amount: donation divided by ratio + pending balance.
+                    toMint = amount.mul(numeratorVal).div(denominatorVal) + pendingBalance;
+
+                    // Clear the pending balance.
+                    if (pendingBalance > 0) {
+                        Registry(registryContract).clearPendingBalance(recipient);
+                    }
+                }
             }
+            // If we don't have a membership application, or we did not donate enough to cover dues
+            // there is nothing else to do.
+            return;
+        } else {
+            // The amount to mint: donation divided by ratio.
+            toMint = amount.mul(numeratorVal).div(denominatorVal);
         }
+
+        // Determine the maximum supply of the CSTK token.
+        uint256 totalSupply = IERC20(tokenContract).totalSupply();
 
         // The recipient cannot receive more than the following amount of tokens:
         // maxR := maxTrust[recipient] * TOTAL_SUPPLY / 10000000.

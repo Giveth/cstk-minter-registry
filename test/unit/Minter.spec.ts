@@ -111,7 +111,7 @@ describe('unit/Minter', () => {
       subject = (_tokenContract: string, _sender: Wallet) =>
         context.minter.connect(_sender).changeTokenContract(_tokenContract);
 
-      check = context.minter.cstkToken;
+      check = context.minter.token;
 
       testToken = actors.anyone().address; // any address
     });
