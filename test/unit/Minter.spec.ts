@@ -102,36 +102,36 @@ describe('unit/Minter', () => {
     });
   });
 
-  describe('#changeCSTKTokenContract', () => {
+  describe('#changeTokenContract', () => {
     let subject: (string, _sender: Wallet) => Promise<any>;
     let check: () => Promise<string>;
-    let testCSTKToken: string;
+    let testToken: string;
 
     before(() => {
-      subject = (_cstkTokenContract: string, _sender: Wallet) =>
-        context.minter.connect(_sender).changeCSTKTokenContract(_cstkTokenContract);
+      subject = (_tokenContract: string, _sender: Wallet) =>
+        context.minter.connect(_sender).changeTokenContract(_tokenContract);
 
       check = context.minter.cstkToken;
 
-      testCSTKToken = actors.anyone().address; // any address
+      testToken = actors.anyone().address; // any address
     });
 
     describe('works and', () => {
-      it('emits the cstk contract changed event', async () => {
-        await expect(subject(testCSTKToken, actors.adminFirst()))
-          .to.emit(context.minter, 'CSTKTokenContractChanged')
-          .withArgs(testCSTKToken, actors.adminFirst().address);
+      it('emits the contract changed event', async () => {
+        await expect(subject(testToken, actors.adminFirst()))
+          .to.emit(context.minter, 'TokenContractChanged')
+          .withArgs(testToken, actors.adminFirst().address);
       });
 
-      it('changes the cstk token contract', async () => {
-        await subject(testCSTKToken, actors.adminFirst());
-        expect(await check()).to.be.eq(testCSTKToken);
+      it('changes the token contract', async () => {
+        await subject(testToken, actors.adminFirst());
+        expect(await check()).to.be.eq(testToken);
       });
     });
 
     describe('fails when', () => {
       it('not called by an admin address', async () => {
-        await expect(subject(testCSTKToken, actors.anyone())).to.be.reverted;
+        await expect(subject(testToken, actors.anyone())).to.be.reverted;
       });
 
       it('trying to set zero address as the cstk token contract', async () => {

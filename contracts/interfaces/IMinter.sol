@@ -11,10 +11,10 @@ contract IMinter {
     /// @param dao The new DAO contract address
     function changeDAOContract(address dao) external;
 
-    /// @notice Change the address of the CSTK token contract.
+    /// @notice Change the address of the token contract.
     /// @dev Must be called by an Admin account.
-    /// @param cstkToken The new CSTK token contract address
-    function changeCSTKTokenContract(address cstkToken) external;
+    /// @param token The new token contract address
+    function changeTokenContract(address token) external;
 
     /// @notice Change the address of the Registry.
     /// @dev Must be called by an Admin account
@@ -88,9 +88,9 @@ contract IMinter {
     event DAOContractChanged(address daoContract, address admin);
 
     /// @dev Event emitted when the CSTK token contract is changed
-    /// @param cstkTokenContract The address of the new CSTK Token contract
+    /// @param tokenContract The address of the new CSTK Token contract
     /// @param admin The admin account that made the change
-    event CSTKTokenContractChanged(address cstkTokenContract, address admin);
+    event TokenContractChanged(address tokenContract, address admin);
 
     /// @dev Event emitted when the Registry contract is changed
     /// @param registryContract The address of the new Registry contract

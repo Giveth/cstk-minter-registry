@@ -49,10 +49,10 @@ contract Minter is IMinter, AdminRole {
         emit DAOContractChanged(daoContract, msg.sender);
     }
 
-    function changeCSTKTokenContract(address cstkToken) external onlyAdmin {
-        require(cstkToken != address(0), 'CSTK token cannot be zero address');
-        tokenContract = cstkToken;
-        emit CSTKTokenContractChanged(tokenContract, msg.sender);
+    function changeTokenContract(address token) external onlyAdmin {
+        require(token != address(0), 'CSTK token cannot be zero address');
+        tokenContract = token;
+        emit TokenContractChanged(tokenContract, msg.sender);
     }
 
     function changeRegistry(address registry) external onlyAdmin {
