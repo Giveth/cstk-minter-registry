@@ -29,50 +29,6 @@ describe('unit/Minter', () => {
     });
   });
 
-  describe('#pay', () => {
-    let subject: (_beneficiary: Wallet | string, _sender: Wallet, _value: BigNumberish) => Promise<any>;
-    let setRatio: (_nominator: BigNumberish, _denominator: BigNumberish) => Promise<any>;
-    let testSent: BigNumber;
-    let testMinted: BigNumber;
-
-    before(() => {
-      subject = (_beneficiary: Wallet | string, _sender: Wallet, _value: BigNumberish) =>
-        context.minter
-          .connect(_sender)
-          .pay(typeof _beneficiary === 'string' ? _beneficiary : _beneficiary.address, { value: _value });
-
-      setRatio = (_nominator: BigNumberish, _denominator: BigNumberish) =>
-        context.minter.connect(actors.adminFirst()).setRatio(_nominator, _denominator);
-
-      testSent = parseEther('1.0');
-      testMinted = testSent.div(2);
-    });
-
-    beforeEach(async () => {
-      await await setRatio('1', '2'); // Ratio 1/2
-    });
-
-    describe('works and', () => {
-      it('emits a payment received event', async () => {
-        await expect(subject(actors.contributorFirst(), actors.anyone(), testSent))
-          .to.emit(context.minter, 'PaymentReceived')
-          .withArgs(actors.contributorFirst().address, testSent);
-      });
-
-      it('emits a noop minted event', async () => {
-        await expect(subject(actors.contributorFirst(), actors.anyone(), testSent))
-          .to.emit(context.minter, 'NoopMinted')
-          .withArgs(actors.contributorFirst().address, testMinted);
-      });
-    });
-
-    describe('fails when', () => {
-      it('trying to pay 0 ETH', async () => {
-        await expect(subject(actors.anyone(), actors.anyone(), '0')).to.be.reverted;
-      });
-    });
-  });
-
   describe('#setRatio', async () => {
     let subject: (_numerator: BigNumberish, _denominator: BigNumberish, _sender: Wallet) => Promise<any>;
     let testNumerator: BigNumber;

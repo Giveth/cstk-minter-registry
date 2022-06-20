@@ -39,15 +39,6 @@ contract IMinter {
     /// @param toMint The amount of CSTK we expect to mint
     function mint(address recipient, uint256 toMint) external;
 
-    //// EXTERNAL FUNCTIONS:
-
-    /// @notice Pay eth and mint the appropiate amount of CSTK tokens to the beneficiary.
-    ///
-    /// The amount of tokens recieved is equal to value of eth send multiplied by the current ratio.
-    /// @dev Payments are forwarded to the collector.
-    /// @param beneficiary The beneficiary of the minted CSTK tokens
-    function pay(address beneficiary) external payable;
-
     //// VIEW FUNCTIONS:
 
     /// @notice Returns the value of the nominator used by the mint ratio.

@@ -74,16 +74,6 @@ contract Minter is IMinter, AdminRole {
 
     //// EXTERNAL FUNCTIONS:
 
-    function pay(address beneficiary) external payable {
-        require(msg.value > 0, 'Cannot pay 0');
-
-        // Get the amount to mint based on the numerator/denominator.
-        uint256 toMint = msg.value.mul(numeratorVal).div(denominatorVal);
-        _mint(beneficiary, toMint);
-
-        emit PaymentReceived(beneficiary, msg.value);
-    }
-
     //// VIEW FUNCTIONS:
 
     function numerator() external view returns (uint256) {
