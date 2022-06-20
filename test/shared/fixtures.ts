@@ -183,7 +183,6 @@ export type MinterFixture = {
   state: {
     numerator: BigNumberish;
     denominator: BigNumberish;
-    collector: string;
   };
 };
 
@@ -207,9 +206,6 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
     [admins, dao.address, registry.address, token.address]
   )) as IMinter;
 
-  const collector = dao.address;
-  await minter.changeCollector(collector);
-
   const numerator = 500;
   const denominator = 1000;
   await minter.setRatio(numerator, denominator);
@@ -227,7 +223,6 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
     state: {
       numerator,
       denominator,
-      collector,
     },
   };
 };

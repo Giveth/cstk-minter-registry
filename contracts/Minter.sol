@@ -28,8 +28,6 @@ contract Minter is IMinter, AdminRole {
     uint256 internal numeratorVal;
     uint256 internal denominatorVal;
 
-    address payable internal collectorAddr;
-
     //// CONSTRUCTOR:
 
     constructor(
@@ -44,12 +42,6 @@ contract Minter is IMinter, AdminRole {
     }
 
     //// ADMIN FUNCTIONS:
-
-    function changeCollector(address payable collector) external onlyAdmin {
-        require(collector != address(0), 'Collector cannot be zero address');
-        collectorAddr = collector;
-        emit CollectorChanged(collectorAddr, msg.sender);
-    }
 
     function changeDAOContract(address dao) external onlyAdmin {
         require(dao != address(0), 'DAO cannot be address zero');
@@ -89,8 +81,6 @@ contract Minter is IMinter, AdminRole {
         uint256 toMint = msg.value.mul(numeratorVal).div(denominatorVal);
         _mint(beneficiary, toMint);
 
-        collectorAddr.sendValue(msg.value);
-
         emit PaymentReceived(beneficiary, msg.value);
     }
 
@@ -106,10 +96,6 @@ contract Minter is IMinter, AdminRole {
 
     function ratio() external view returns (uint256) {
         return numeratorVal.div(denominatorVal);
-    }
-
-    function collector() external view returns (address) {
-        return collectorAddr;
     }
 
     function registry() external view returns (address) {

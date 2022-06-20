@@ -64,11 +64,6 @@ describe('unit/Minter', () => {
           .to.emit(context.minter, 'NoopMinted')
           .withArgs(actors.contributorFirst().address, testMinted);
       });
-
-      it('transfers all ETH to the collector', async () => {
-        await subject(actors.contributorFirst(), actors.anyone(), testSent);
-        expect(await provider.getBalance(context.state.collector)).to.be.eq(testSent);
-      });
     });
 
     describe('fails when', () => {
@@ -109,40 +104,6 @@ describe('unit/Minter', () => {
     describe('fails when', () => {
       it('not called by an admin address', async () => {
         await expect(subject(1, 10, actors.anyone())).to.be.reverted;
-      });
-    });
-  });
-
-  describe('#changeCollector', () => {
-    let subject: (_collector: Wallet | string, _sender: Wallet) => Promise<any>;
-
-    before(() => {
-      subject = (_collector: Wallet | string, _sender: Wallet) =>
-        context.minter
-          .connect(_sender)
-          .changeCollector(typeof _collector === 'string' ? _collector : _collector.address);
-    });
-
-    describe('works and', () => {
-      it('emits the collector changed event', async () => {
-        await expect(subject(actors.anyone(), actors.adminFirst()))
-          .to.emit(context.minter, 'CollectorChanged')
-          .withArgs(actors.anyone().address, actors.adminFirst().address);
-      });
-
-      it('changes the collector', async () => {
-        await subject(actors.anyone(), actors.adminFirst());
-        expect(await context.minter.collector()).to.be.eq(actors.anyone().address);
-      });
-    });
-
-    describe('fails when', () => {
-      it('not called by an admin address', async () => {
-        await expect(subject(actors.anyone(), actors.anyone())).to.be.reverted;
-      });
-
-      it('trying to set zero address as collector', async () => {
-        await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
       });
     });
   });

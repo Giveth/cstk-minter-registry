@@ -6,11 +6,6 @@ pragma solidity ^0.5.17;
 contract IMinter {
     //// ADMIN FUNCTIONS:
 
-    /// @notice Change the address of the collector.
-    /// @dev Can only be called by an Admin account.
-    /// @param collector The collector address.
-    function changeCollector(address payable collector) external;
-
     /// @notice Change the address of the DAO that mints the tokens.
     /// @dev Must be called by an Admin account
     /// @param dao The new DAO contract address
@@ -67,10 +62,6 @@ contract IMinter {
     /// @return The calculated value of the ratio
     function ratio() external view returns (uint256);
 
-    /// @notice Returns the address of the collector.
-    /// @return The address of the collector
-    function collector() external view returns (address);
-
     /// @notice Returns the address of the DAO contract.
     /// @return The address of the DAO contract
     function dao() external view returns (address);
@@ -99,11 +90,6 @@ contract IMinter {
     /// @param nominator The new nominator value
     /// @param denominator The new denominator value
     event RatioChanged(uint256 nominator, uint256 denominator);
-
-    /// @dev Event emitted when the collector address is changed
-    /// @param collector The new collector address
-    /// @param admin The admin account that made the change
-    event CollectorChanged(address collector, address admin);
 
     /// @dev Event emitted when the DAO contract is changed
     /// @param daoContract The address of the new DAO contract
