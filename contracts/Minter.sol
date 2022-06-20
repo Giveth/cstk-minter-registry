@@ -22,7 +22,7 @@ contract Minter is IMinter, AdminRole {
     //// STORAGE:
 
     address internal registryContract;
-    address internal cstkTokenContract;
+    address internal tokenContract;
     address internal daoContract;
 
     uint256 internal numeratorVal;
@@ -40,7 +40,7 @@ contract Minter is IMinter, AdminRole {
     ) public AdminRole(authorizedKeys) {
         daoContract = dao;
         registryContract = registry;
-        cstkTokenContract = cstkToken;
+        tokenContract = cstkToken;
     }
 
     //// ADMIN FUNCTIONS:
@@ -59,8 +59,8 @@ contract Minter is IMinter, AdminRole {
 
     function changeCSTKTokenContract(address cstkToken) external onlyAdmin {
         require(cstkToken != address(0), 'CSTK token cannot be zero address');
-        cstkTokenContract = cstkToken;
-        emit CSTKTokenContractChanged(cstkTokenContract, msg.sender);
+        tokenContract = cstkToken;
+        emit CSTKTokenContractChanged(tokenContract, msg.sender);
     }
 
     function changeRegistry(address registry) external onlyAdmin {
@@ -121,20 +121,20 @@ contract Minter is IMinter, AdminRole {
     }
 
     function cstkToken() external view returns (address) {
-        return cstkTokenContract;
+        return tokenContract;
     }
 
     /// INTERNAL FUNCTIONS:
 
     function _mint(address recipient, uint256 toMint) internal {
         // Determine the maximum supply of the CSTK token.
-        uint256 totalSupply = IERC20(cstkTokenContract).totalSupply();
+        uint256 totalSupply = IERC20(tokenContract).totalSupply();
 
         // Get the max trust amount for the recipient acc from the Registry.
         uint256 maxTrust = Registry(registryContract).getMaxTrust(recipient);
 
         // Get the current CSTK balance of the recipient account.
-        uint256 recipientBalance = IERC20(cstkTokenContract).balanceOf(recipient);
+        uint256 recipientBalance = IERC20(tokenContract).balanceOf(recipient);
 
         // It's activating membership too
         if (recipientBalance == 0) {
