@@ -27,27 +27,27 @@ contract IMinter {
     /// @param _denominator The ratio denominator
     function setRatio(uint256 _numerator, uint256 _denominator) external;
 
-    /// @notice Mint a given amount of CSTK tokens to a recipient account.
+    /// @notice Mint a given amount of tokens to a recipient account.
     ///
-    /// If the account is not a member (has a CSTK token balance of 0), this will increase the pending balance
+    /// If the account is not a member (has a token balance of 0), this will increase the pending balance
     /// of the account.
     ///
     /// The recipient cannot receive an mount of tokens greater than the `maxTrust` value of her account
     /// in the Registry contract.
     /// @dev Can only be called by an Admin account.
-    /// @param recipient The account to receive CSTK tokens
-    /// @param toMint The amount of CSTK we expect to mint
+    /// @param recipient The account to receive tokens
+    /// @param toMint The amount of we expect to mint
     function mint(address recipient, uint256 toMint) external;
 
-    /// @notice Bridge a donation transaction to the minter contract.abi
+    /// @notice Bridge a donation transaction to the minter contract.
+    ///
+    /// The donation will call ethe underlying mnt function.
     ///
     /// @dev Cano only be called by an Admin account.
     function bridgeDonation(
         address sender,
-        address token,
-        uint64 receiverID,
         uint256 amount,
-        bytes32 homeTX
+        string calldata homeTX
     ) external;
 
     //// VIEW FUNCTIONS:
@@ -78,14 +78,15 @@ contract IMinter {
 
     //// EVENTS:
 
-    /// @dev Event emitted when a payment of eth is received by the Minter
-    /// @param sender The account making the payment
-    /// @param amount The amount of wei received
-    event PaymentReceived(address sender, uint256 amount);
+    /// @dev Event emitted when a donation is bridged.
+    /// @param sender The account that sent the donation
+    /// @param amount The amount donated
+    /// @param homeTX The transaction being bridged
+    event DonationBridged(address indexed sender, uint256 amount, string homeTX);
 
-    /// @dev Event emitted when CSTK tokens are minted to the recipient.
+    /// @dev Event emitted when tokens are minted to the recipient.
     /// @param recipient The address receiving the tokens
-    /// @param amount The amount of CSTK tokens received
+    /// @param amount The amount of tokens received
     event Mint(address indexed recipient, uint256 amount);
 
     /// @dev Event emitted when the mint ratio is changed
@@ -98,8 +99,8 @@ contract IMinter {
     /// @param admin The admin account that made the change
     event DAOContractChanged(address daoContract, address admin);
 
-    /// @dev Event emitted when the CSTK token contract is changed
-    /// @param tokenContract The address of the new CSTK Token contract
+    /// @dev Event emitted when the token contract is changed
+    /// @param tokenContract The address of the new Token contract
     /// @param admin The admin account that made the change
     event TokenContractChanged(address tokenContract, address admin);
 

@@ -76,11 +76,11 @@ contract Minter is IMinter, AdminRole {
 
     function bridgeDonation(
         address sender,
-        address token,
-        uint64 receiverID,
         uint256 amount,
-        bytes32 homeTX
-    ) external onlyAdmin {}
+        string calldata homeTX
+    ) external onlyAdmin {
+        emit DonationBridged(sender, amount, homeTX);
+    }
 
     //// VIEW FUNCTIONS:
 

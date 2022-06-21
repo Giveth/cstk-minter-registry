@@ -29,6 +29,33 @@ describe('unit/Minter', () => {
     });
   });
 
+  describe('#bridgeDonation', () => {
+    let subject: (_sender: string, _amount: BigNumberish, _homeTX: string, sender: Wallet) => Promise<any>;
+    const testAmount = parseEther('100');
+    const testHomeTx = 'TESTTESTTESTTEST';
+
+    before(() => {
+      subject = (_sender: string, _amount: BigNumberish, _homeTX: string, sender: Wallet) =>
+        context.minter.connect(sender).bridgeDonation(_sender, _amount, _homeTX);
+    });
+
+    describe('works and', () => {
+      it('emits a donation bridged event', async () => {
+        await expect(subject(actors.anyone().address, testAmount, testHomeTx, actors.adminFirst()))
+          .to.emit(context.minter, 'DonationBridged')
+          .withArgs(actors.anyone().address, testAmount, testHomeTx);
+      });
+    });
+
+    describe('fails when', () => {
+      it('not called by an admin', async () => {
+        await expect(subject(actors.anyone().address, testAmount, testHomeTx, actors.anyone())).to.be.revertedWith(
+          'AdminRole: caller does not have the Admin role'
+        );
+      });
+    });
+  });
+
   describe('#setRatio', async () => {
     let subject: (_numerator: BigNumberish, _denominator: BigNumberish, _sender: Wallet) => Promise<any>;
     let testNumerator: BigNumber;
