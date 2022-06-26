@@ -81,6 +81,7 @@ contract Minter is IMinter, AdminRole {
         uint256 amount,
         string calldata homeTX
     ) external onlyAdmin {
+        _mint(sender, amount);
         emit DonationBridged(sender, amount, homeTX);
     }
 
