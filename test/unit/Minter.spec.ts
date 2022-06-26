@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BigNumber, BigNumberish, constants, utils, Wallet } from 'ethers';
+import { BigNumber, BigNumberish, constants, ContractTransaction, utils, Wallet } from 'ethers';
 import { ActorFixture, MinterFixture, createFixtureLoader, provider, minterFixture } from '../shared';
 import { LoadFixtureFunction } from '../types';
 
@@ -87,6 +87,34 @@ describe('unit/Minter', () => {
     describe('fails when', () => {
       it('not called by an admin address', async () => {
         await expect(subject(1, 10, actors.anyone())).to.be.reverted;
+      });
+    });
+  });
+
+  describe('#setMembershipDues', async () => {
+    const testAmount = parseEther('450');
+
+    let subject: (_amount: BigNumberish, sender: Wallet) => Promise<any>;
+
+    before(() => {
+      subject = (_amount: BigNumberish, sender: Wallet) => context.minter.connect(sender).setMemebershipDues(_amount);
+    });
+
+    describe('works and', () => {
+      it('emits the membership dues changed event', async () => {
+        await expect(subject(testAmount, actors.adminFirst()))
+          .to.emit(context.minter, 'MembershipDuesChanged')
+          .withArgs(testAmount, actors.adminFirst().address);
+      });
+
+      it('changes the membership dues', async () => {
+        await subject(testAmount, actors.adminFirst());
+      });
+    });
+
+    describe('fails when', () => {
+      it('not called by an admin address', async () => {
+        await expect(subject(testAmount, actors.anyone())).to.be.reverted;
       });
     });
   });

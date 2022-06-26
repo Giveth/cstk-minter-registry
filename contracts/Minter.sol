@@ -25,7 +25,7 @@ contract Minter is IMinter, AdminRole {
     address internal tokenContract;
     address internal daoContract;
 
-    uint256 membershipDues;
+    uint256 internal membershipDuesVal;
 
     uint256 internal numeratorVal;
     uint256 internal denominatorVal;
@@ -63,16 +63,18 @@ contract Minter is IMinter, AdminRole {
         emit RegistryContractChanged(registryContract, msg.sender);
     }
 
+    function setMemebershipDues(uint256 amount) external onlyAdmin {
+        membershipDuesVal = amount;
+        emit MembershipDuesChanged(amount, msg.sender);
+    }
+
     function setRatio(uint256 numerator, uint256 denominator) external onlyAdmin {
         numeratorVal = numerator;
         denominatorVal = denominator;
         emit RatioChanged(numeratorVal, denominatorVal);
     }
 
-    function mint(address recipient, uint256 toMint) external onlyAdmin {
-        _mint(recipient, toMint);
-        emit Mint(recipient, toMint);
-    }
+    /// EXTERNAL FUNCTIONS:
 
     function bridgeDonation(
         address sender,
@@ -108,16 +110,20 @@ contract Minter is IMinter, AdminRole {
         return tokenContract;
     }
 
+    function membershipDues() external view returns (uint256) {
+        return membershipDuesVal;
+    }
+
     /// INTERNAL FUNCTIONS:
 
     function _mint(address recipient, uint256 amount) internal {
+        uint256 toMint;
+
         // Get the max trust amount for the recipient acc from the Registry.
         uint256 maxTrust = Registry(registryContract).getMaxTrust(recipient);
 
         // Get the current CSTK balance of the recipient account.
         uint256 recipientBalance = IERC20(tokenContract).balanceOf(recipient);
-
-        uint256 toMint;
 
         // Check if we are not an active member:
         // Active members must have token balance.
@@ -126,12 +132,12 @@ contract Minter is IMinter, AdminRole {
             // Application is approved if we have a maxTrust score.
             if (maxTrust > 0) {
                 // Check if the deposit is greather than membership dues.
-                if (amount >= membershipDues) {
+                if (amount >= membershipDuesVal) {
                     // If we did pay membership dues, activate the membership:
                     // Add any pending balance to the mint amount and clear the value.
                     uint256 pendingBalance = Registry(registryContract).getPendingBalance(recipient);
 
-                    // Mint amount: donation divided by ratio + pending balance.
+                    // Mint amount: donation * ratio + pending balance.
                     toMint = amount.mul(numeratorVal).div(denominatorVal) + pendingBalance;
 
                     // Clear the pending balance.
@@ -144,7 +150,7 @@ contract Minter is IMinter, AdminRole {
             // there is nothing else to do.
             return;
         } else {
-            // The amount to mint: donation divided by ratio.
+            // Amount to mint is the donation * ratio.
             toMint = amount.mul(numeratorVal).div(denominatorVal);
         }
 

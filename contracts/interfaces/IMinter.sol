@@ -27,17 +27,10 @@ contract IMinter {
     /// @param _denominator The ratio denominator
     function setRatio(uint256 _numerator, uint256 _denominator) external;
 
-    /// @notice Mint a given amount of tokens to a recipient account.
-    ///
-    /// If the account is not a member (has a token balance of 0), this will increase the pending balance
-    /// of the account.
-    ///
-    /// The recipient cannot receive an mount of tokens greater than the `maxTrust` value of her account
-    /// in the Registry contract.
+    /// @notice Set the membership dues that need to be donated to actvate a membership.
     /// @dev Can only be called by an Admin account.
-    /// @param recipient The account to receive tokens
-    /// @param toMint The amount of we expect to mint
-    function mint(address recipient, uint256 toMint) external;
+    /// @param amount The amount to set the new dues to
+    function setMemebershipDues(uint256 amount) external;
 
     /// @notice Bridge a donation transaction to the minter contract.
     ///
@@ -64,6 +57,10 @@ contract IMinter {
     /// @return The calculated value of the ratio
     function ratio() external view returns (uint256);
 
+    /// @notice Returns the current membership dues.
+    /// @return The membership dues
+    function membershipDues() external view returns (uint256);
+
     /// @notice Returns the address of the DAO contract.
     /// @return The address of the DAO contract
     function dao() external view returns (address);
@@ -84,15 +81,15 @@ contract IMinter {
     /// @param homeTX The transaction being bridged
     event DonationBridged(address indexed sender, uint256 amount, string homeTX);
 
-    /// @dev Event emitted when tokens are minted to the recipient.
-    /// @param recipient The address receiving the tokens
-    /// @param amount The amount of tokens received
-    event Mint(address indexed recipient, uint256 amount);
-
     /// @dev Event emitted when the mint ratio is changed
     /// @param nominator The new nominator value
     /// @param denominator The new denominator value
     event RatioChanged(uint256 nominator, uint256 denominator);
+
+    /// @dev Event emitted when the mebership dues are changed.
+    /// @param amount The new memebership dues
+    /// @param admin The admin account that made the change
+    event MembershipDuesChanged(uint256 amount, address admin);
 
     /// @dev Event emitted when the DAO contract is changed
     /// @param daoContract The address of the new DAO contract
