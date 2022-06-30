@@ -119,39 +119,39 @@ describe('unit/Minter', () => {
     });
   });
 
-  describe('#changeDAOContract', () => {
-    let subject: (_daoContract: string, _sender: Wallet) => Promise<any>;
+  describe('#changeTokenManagerContract', () => {
+    let subject: (_tokenManagerContract: string, _sender: Wallet) => Promise<any>;
     let check: () => Promise<string>;
-    let testDAO: string;
+    let testTokenManager: string;
 
     before(() => {
-      subject = (_daoContract: string, _sender: Wallet) =>
-        context.minter.connect(_sender).changeDAOContract(_daoContract);
+      subject = (_tokenManagerContract: string, _sender: Wallet) =>
+        context.minter.connect(_sender).changeTokenManagerContract(_tokenManagerContract);
 
-      check = context.minter.dao;
+      check = context.minter.tokenManager;
 
-      testDAO = actors.anyone().address;
+      testTokenManager = actors.anyone().address;
     });
 
     describe('works and', () => {
-      it('emits the dao contract changed event', async () => {
-        await expect(subject(testDAO, actors.adminFirst()))
-          .to.emit(context.minter, 'DAOContractChanged')
-          .withArgs(testDAO, actors.adminFirst().address);
+      it('emits the token manager contract changed event', async () => {
+        await expect(subject(testTokenManager, actors.adminFirst()))
+          .to.emit(context.minter, 'TokenManagerContractChanged')
+          .withArgs(testTokenManager, actors.adminFirst().address);
       });
 
-      it('changes the dao contract', async () => {
-        await subject(testDAO, actors.adminFirst());
-        expect(await check()).to.be.eq(testDAO);
+      it('changes the token manager address', async () => {
+        await subject(testTokenManager, actors.adminFirst());
+        expect(await check()).to.be.eq(testTokenManager);
       });
     });
 
     describe('fails when', () => {
       it('not called by an admin address', async () => {
-        await expect(subject(testDAO, actors.anyone())).to.be.reverted;
+        await expect(subject(testTokenManager, actors.anyone())).to.be.reverted;
       });
 
-      it('trying to set zero address as dao contract', async () => {
+      it('trying to set zero address as token manager address', async () => {
         await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
       });
     });

@@ -173,10 +173,10 @@ export const registryFixture: Fixture<RegistryFixture> = async ([wallet]) => {
 export type MinterFixture = {
   minter: IMinter;
   token: IERC20;
-  dao: IMintable;
+  tokenManager: IMintable;
   params: {
     authorizedKeys: string[];
-    daoAddress: string;
+    tokenManagerAddress: string;
     registryAddress: string;
     tokenAddress: string;
   };
@@ -192,7 +192,7 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
 
   const { registry, token } = await registryFixture([wallet], provider);
 
-  const dao = (await waffle.deployContract(wallet, {
+  const tokenManager = (await waffle.deployContract(wallet, {
     abi: TestMintableABI,
     bytecode: TestMintableBytecode,
   })) as IMintable;
@@ -203,7 +203,7 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
       abi: TestMinterABI,
       bytecode: TestMinterBytecode,
     },
-    [admins, dao.address, registry.address, token.address]
+    [admins, tokenManager.address, registry.address, token.address]
   )) as IMinter;
 
   const numerator = 500;
@@ -216,10 +216,10 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
   return {
     minter,
     token,
-    dao,
+    tokenManager: tokenManager,
     params: {
       authorizedKeys: admins,
-      daoAddress: dao.address,
+      tokenManagerAddress: tokenManager.address,
       registryAddress: registry.address,
       tokenAddress: token.address,
     },

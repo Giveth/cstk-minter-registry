@@ -6,10 +6,10 @@ pragma solidity ^0.5.17;
 contract IMinter {
     //// ADMIN FUNCTIONS:
 
-    /// @notice Change the address of the DAO that mints the tokens.
+    /// @notice Change the address of the token manager that mints the tokens.
     /// @dev Must be called by an Admin account
-    /// @param dao The new DAO contract address
-    function changeDAOContract(address dao) external;
+    /// @param tokenManager The new Token Manager contract address
+    function changeTokenManagerContract(address tokenManager) external;
 
     /// @notice Change the address of the token contract.
     /// @dev Must be called by an Admin account.
@@ -30,7 +30,7 @@ contract IMinter {
     /// @notice Set the membership dues that need to be donated to actvate a membership.
     /// @dev Can only be called by an Admin account.
     /// @param amount The amount to set the new dues to
-    function setMembershipDuesuint256 amount) external;
+    function setMembershipDues(uint256 amount) external;
 
     /// @notice Bridge a donation transaction to the minter contract.
     ///
@@ -61,9 +61,9 @@ contract IMinter {
     /// @return The membership dues
     function membershipDues() external view returns (uint256);
 
-    /// @notice Returns the address of the DAO contract.
-    /// @return The address of the DAO contract
-    function dao() external view returns (address);
+    /// @notice Returns the address of the token manager contract.
+    /// @return The address of the token manager contract
+    function tokenManager() external view returns (address);
 
     /// @notice Returns the address of the registry contract.
     /// @return The address of the registry contract
@@ -91,10 +91,10 @@ contract IMinter {
     /// @param admin The admin account that made the change
     event MembershipDuesChanged(uint256 amount, address admin);
 
-    /// @dev Event emitted when the DAO contract is changed
-    /// @param daoContract The address of the new DAO contract
+    /// @dev Event emitted when the Token Manager contract is changed
+    /// @param tokenManagerContract The address of the new Token Manager contract
     /// @param admin The admin account that made the change
-    event DAOContractChanged(address daoContract, address admin);
+    event TokenManagerContractChanged(address tokenManagerContract, address admin);
 
     /// @dev Event emitted when the token contract is changed
     /// @param tokenContract The address of the new Token contract

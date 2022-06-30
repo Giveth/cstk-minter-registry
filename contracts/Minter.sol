@@ -23,7 +23,7 @@ contract Minter is IMinter, AdminRole {
 
     address internal registryContract;
     address internal tokenContract;
-    address internal daoContract;
+    address internal tokenManagerContract;
 
     uint256 internal membershipDuesVal;
 
@@ -34,21 +34,21 @@ contract Minter is IMinter, AdminRole {
 
     constructor(
         address[] memory authorizedKeys,
-        address dao,
+        address tokenManager,
         address registry,
         address token
     ) public AdminRole(authorizedKeys) {
-        daoContract = dao;
+        tokenManagerContract = tokenManager;
         registryContract = registry;
         tokenContract = token;
     }
 
     //// ADMIN FUNCTIONS:
 
-    function changeDAOContract(address dao) external onlyAdmin {
-        require(dao != address(0), 'DAO cannot be address zero');
-        daoContract = dao;
-        emit DAOContractChanged(daoContract, msg.sender);
+    function changeTokenManagerContract(address tokenManager) external onlyAdmin {
+        require(tokenManager != address(0), 'Token Manager cannot be zero address');
+        tokenManagerContract = tokenManager;
+        emit TokenManagerContractChanged(tokenManagerContract, msg.sender);
     }
 
     function changeTokenContract(address token) external onlyAdmin {
@@ -63,15 +63,15 @@ contract Minter is IMinter, AdminRole {
         emit RegistryContractChanged(registryContract, msg.sender);
     }
 
-    function setMembershipDues(uint256 amount) external onlyAdmin {
-        membershipDuesVal = amount;
-        emit MembershipDuesChanged(amount, msg.sender);
-    }
-
     function setRatio(uint256 numerator, uint256 denominator) external onlyAdmin {
         numeratorVal = numerator;
         denominatorVal = denominator;
         emit RatioChanged(numeratorVal, denominatorVal);
+    }
+
+    function setMembershipDues(uint256 amount) external onlyAdmin {
+        membershipDuesVal = amount;
+        emit MembershipDuesChanged(amount, msg.sender);
     }
 
     /// EXTERNAL FUNCTIONS:
@@ -99,20 +99,20 @@ contract Minter is IMinter, AdminRole {
         return numeratorVal.div(denominatorVal);
     }
 
-    function registry() external view returns (address) {
-        return registryContract;
+    function membershipDues() external view returns (uint256) {
+        return membershipDuesVal;
     }
 
-    function dao() external view returns (address) {
-        return daoContract;
+    function tokenManager() external view returns (address) {
+        return tokenManagerContract;
     }
 
     function token() external view returns (address) {
         return tokenContract;
     }
 
-    function membershipDues() external view returns (uint256) {
-        return membershipDuesVal;
+    function registry() external view returns (address) {
+        return registryContract;
     }
 
     /// INTERNAL FUNCTIONS:
@@ -170,7 +170,7 @@ contract Minter is IMinter, AdminRole {
 
         // If there is anything to mint, mint it to the recipient.
         if (toMint > 0) {
-            IMintable(daoContract).mint(recipient, toMint);
+            IMintable(tokenManagerContract).mint(recipient, toMint);
         }
     }
 }

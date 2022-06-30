@@ -91,7 +91,7 @@ const main = async () => {
   const minterFactory = await ethers.getContractFactory('Minter');
   const minter = (await minterFactory
     .connect(deployer)
-    .deploy(params.authorizedKeys, params.dao, params.registry, params.token)) as Minter;
+    .deploy(params.authorizedKeys, params.tokenManager, params.registry, params.token)) as Minter;
   const { deployTransaction } = minter;
 
   log.info(`Deployment tx hash: ${deployTransaction.hash}`);
@@ -116,7 +116,7 @@ const main = async () => {
     await mustAuthorizedKey(minter, aKey);
   }
 
-  mustMatchAddress('DAO', params.dao, await minter.dao());
+  mustMatchAddress('TokenManager', params.tokenManager, await minter.tokenManager());
   mustMatchAddress('Token', params.token, await minter.token());
   mustMatchAddress('Registry', params.registry, await minter.registry());
 

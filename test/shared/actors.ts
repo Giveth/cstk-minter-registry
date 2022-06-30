@@ -4,7 +4,7 @@ import { Wallet } from 'ethers';
 // User indexes:
 export const WALLET_USER_INDEXES = {
   OWNER: 0,
-  DAO: 1,
+  TOKEN_MANAGER: 1,
   ADMIN_FIRST: 2,
   ADMIN_SECOND: 3,
   ADMIN_THIRD: 4,
@@ -31,8 +31,8 @@ export class ActorFixture {
     return this._getActor(WALLET_USER_INDEXES.OWNER);
   }
 
-  dao() {
-    return this._getActor(WALLET_USER_INDEXES.DAO);
+  tokenManager() {
+    return this._getActor(WALLET_USER_INDEXES.TOKEN_MANAGER);
   }
 
   deployer() {

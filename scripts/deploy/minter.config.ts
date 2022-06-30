@@ -8,7 +8,7 @@ const { isAddress } = ethers.utils;
 export const DEFAULT_PARAMS: MinterTypes.ConstructionParams = {
   authorizedKeys: ['0x839395e20bbB182fa440d08F850E6c7A8f6F0780', '0xa32aECda752cF4EF89956e83d60C04835d4FA867'],
   token: '0xc4fbe68522ba81a28879763c3ee33e08b13c499e',
-  dao: '0xa18effbceb3b6bfd914bac1c08103fc93b5d4b45',
+  tokenManager: '0xa18effbceb3b6bfd914bac1c08103fc93b5d4b45',
   registry: '0x28512FB7681c8615aef25a8EF3bcb90aFAC502cB',
 };
 
@@ -37,8 +37,8 @@ export const checkConstructionParams = (p: MinterTypes.ConstructionParams) => {
   if (!checkAddress(p.token)) {
     throw new Error('Token address invalid');
   }
-  if (!checkAddress(p.dao)) {
-    throw new Error('DAO address invalid');
+  if (!checkAddress(p.tokenManager)) {
+    throw new Error('Token Manager address invalid');
   }
   if (!checkAddress(p.registry)) {
     throw new Error('Registry address invalid');

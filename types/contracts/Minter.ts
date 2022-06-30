@@ -1,7 +1,7 @@
 export module MinterTypes {
   export type ConstructionParams = {
     authorizedKeys: string[];
-    dao: string;
+    tokenManager: string;
     registry: string;
     token: string;
   };

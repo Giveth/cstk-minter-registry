@@ -68,15 +68,22 @@ describe('unit/Deployment', () => {
   describe('Minter', () => {
     let deploy: (
       _authorizedKeys: string[],
-      _daoAddress: string,
+      _tokenManagerAddress: string,
       _registryAddress: string,
       _tokenAddress: string
     ) => Promise<Contract>;
 
     before(async () => {
       factory = await ethers.getContractFactory('Minter');
-      deploy = (_authorizedKeys: string[], _daoAddress: string, _registryAddress: string, _tokenAddress: string) =>
-        factory.connect(actors.deployer()).deploy(_authorizedKeys, _daoAddress, _registryAddress, _tokenAddress);
+      deploy = (
+        _authorizedKeys: string[],
+        _tokenManagerAddress: string,
+        _registryAddress: string,
+        _tokenAddress: string
+      ) =>
+        factory
+          .connect(actors.deployer())
+          .deploy(_authorizedKeys, _tokenManagerAddress, _registryAddress, _tokenAddress);
     });
 
     it('deploys and has an address', async () => {
