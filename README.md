@@ -1,6 +1,6 @@
-# CSTK Membership Dapp contracts
+# Membership Dapp contracts
 
-Here are the contracts for the CSTK membership dapp.
+Here are the contracts for the membership dapp.
 
 ## Setting up
 
