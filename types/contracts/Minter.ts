@@ -3,6 +3,6 @@ export module MinterTypes {
     authorizedKeys: string[];
     dao: string;
     registry: string;
-    cstkToken: string;
+    token: string;
   };
 }

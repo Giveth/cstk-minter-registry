@@ -2,7 +2,7 @@
 pragma solidity ^0.5.17;
 
 /// @title IMinter
-/// @notice CSTK token minter interface
+/// @notice Token minter interface
 contract IMinter {
     //// ADMIN FUNCTIONS:
 

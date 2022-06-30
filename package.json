@@ -1,6 +1,6 @@
 {
-  "name": "@giveth/cstk-membership-dapp-contracts",
-  "description": "Contracts for the CSTK Membership dapp",
+  "name": "@giveth/membership-dapp-contracts",
+  "description": "Contracts for the Membership dapp",
   "author": {
     "name": "Giveth Developers",
     "url": "https://giveth.io"
@@ -12,7 +12,7 @@
   "version": "1.0.0",
   "keywords": [
     "solidity",
-    "cstk-dapp"
+    "membership-dapp"
   ],
   "repository": {
     "type": "git",

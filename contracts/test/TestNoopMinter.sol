@@ -10,8 +10,8 @@ contract TestNoopMinter is Minter {
         address[] memory authorizedKeys,
         address dao,
         address registry,
-        address cstkToken
-    ) public Minter(authorizedKeys, dao, registry, cstkToken) {}
+        address token
+    ) public Minter(authorizedKeys, dao, registry, token) {}
 
     function _mint(address recipient, uint256 toMint) internal {
         emit NoopMinted(recipient, toMint);

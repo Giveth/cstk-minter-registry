@@ -91,7 +91,7 @@ const main = async () => {
   const minterFactory = await ethers.getContractFactory('Minter');
   const minter = (await minterFactory
     .connect(deployer)
-    .deploy(params.authorizedKeys, params.dao, params.registry, params.cstkToken)) as Minter;
+    .deploy(params.authorizedKeys, params.dao, params.registry, params.token)) as Minter;
   const { deployTransaction } = minter;
 
   log.info(`Deployment tx hash: ${deployTransaction.hash}`);
@@ -117,7 +117,7 @@ const main = async () => {
   }
 
   mustMatchAddress('DAO', params.dao, await minter.dao());
-  mustMatchAddress('CSTK token', params.cstkToken, await minter.cstkToken());
+  mustMatchAddress('Token', params.token, await minter.token());
   mustMatchAddress('Registry', params.registry, await minter.registry());
 
   log.info('\nSetting inital ratio');

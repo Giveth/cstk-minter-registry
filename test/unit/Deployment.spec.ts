@@ -41,26 +41,26 @@ describe('unit/Deployment', () => {
   });
 
   describe('Registry', () => {
-    let cstkToken: IERC20;
-    let deploy: (_admins: Wallet[], _cstkTokenAddress: string) => Promise<Contract>;
+    let testToken: IERC20;
+    let deploy: (_admins: Wallet[], _tokenAddress: string) => Promise<Contract>;
 
     before(async () => {
       loadFixture = createFixtureLoader(provider.getWallets(), provider);
       factory = await ethers.getContractFactory('Registry');
-      deploy = (_admins: Wallet[], _cstkTokenAddress: string) =>
+      deploy = (_admins: Wallet[], _tokenAddress: string) =>
         factory.connect(actors.deployer()).deploy(
           _admins.map((a) => a.address),
-          _cstkTokenAddress
+          _tokenAddress
         );
     });
 
     beforeEach('create fixture loader', async () => {
       const { token } = await loadFixture(tokenFixture);
-      cstkToken = token;
+      testToken = token;
     });
 
     it('deploys and has an address', async () => {
-      const registry = (await deploy([], cstkToken.address)) as Registry;
+      const registry = (await deploy([], testToken.address)) as Registry;
       expect(registry.address).to.be.a.string;
     });
   });
@@ -70,13 +70,13 @@ describe('unit/Deployment', () => {
       _authorizedKeys: string[],
       _daoAddress: string,
       _registryAddress: string,
-      _cstkTokenAddress: string
+      _tokenAddress: string
     ) => Promise<Contract>;
 
     before(async () => {
       factory = await ethers.getContractFactory('Minter');
-      deploy = (_authorizedKeys: string[], _daoAddress: string, _registryAddress: string, _cstkTokenAddress: string) =>
-        factory.connect(actors.deployer()).deploy(_authorizedKeys, _daoAddress, _registryAddress, _cstkTokenAddress);
+      deploy = (_authorizedKeys: string[], _daoAddress: string, _registryAddress: string, _tokenAddress: string) =>
+        factory.connect(actors.deployer()).deploy(_authorizedKeys, _daoAddress, _registryAddress, _tokenAddress);
     });
 
     it('deploys and has an address', async () => {

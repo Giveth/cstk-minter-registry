@@ -93,7 +93,7 @@ export type RegistryFixture = {
   token: IERC20;
   params: {
     admins: string[];
-    cstkTokenAddress: string;
+    tokenAddress: string;
   };
   state: {
     pendingContributors: RegistryContributor[];
@@ -160,7 +160,7 @@ export const registryFixture: Fixture<RegistryFixture> = async ([wallet]) => {
     token,
     params: {
       admins,
-      cstkTokenAddress: token.address,
+      tokenAddress: token.address,
     },
     state: {
       contributors,
@@ -178,7 +178,7 @@ export type MinterFixture = {
     authorizedKeys: string[];
     daoAddress: string;
     registryAddress: string;
-    cstkTokenAddress: string;
+    tokenAddress: string;
   };
   state: {
     numerator: BigNumberish;
@@ -221,7 +221,7 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
       authorizedKeys: admins,
       daoAddress: dao.address,
       registryAddress: registry.address,
-      cstkTokenAddress: token.address,
+      tokenAddress: token.address,
     },
     state: {
       numerator,

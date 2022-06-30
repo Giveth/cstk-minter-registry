@@ -189,7 +189,7 @@ describe('unit/Minter', () => {
         await expect(subject(testToken, actors.anyone())).to.be.reverted;
       });
 
-      it('trying to set zero address as the cstk token contract', async () => {
+      it('trying to set zero address as the token contract', async () => {
         await expect(subject(AddressZero, actors.adminFirst())).to.be.reverted;
       });
     });

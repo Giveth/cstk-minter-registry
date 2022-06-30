@@ -11,7 +11,7 @@ import './registry/Registry.sol';
 import './registry/AdminRole.sol';
 
 /// @title Minter
-/// @notice CSTK token minter implementation
+/// @notice Token minter implementation
 /// @author Giveth developers
 contract Minter is IMinter, AdminRole {
     using Address for address payable;
@@ -36,11 +36,11 @@ contract Minter is IMinter, AdminRole {
         address[] memory authorizedKeys,
         address dao,
         address registry,
-        address cstkToken
+        address token
     ) public AdminRole(authorizedKeys) {
         daoContract = dao;
         registryContract = registry;
-        tokenContract = cstkToken;
+        tokenContract = token;
     }
 
     //// ADMIN FUNCTIONS:
@@ -52,7 +52,7 @@ contract Minter is IMinter, AdminRole {
     }
 
     function changeTokenContract(address token) external onlyAdmin {
-        require(token != address(0), 'CSTK token cannot be zero address');
+        require(token != address(0), 'Token cannot be zero address');
         tokenContract = token;
         emit TokenContractChanged(tokenContract, msg.sender);
     }
@@ -123,7 +123,7 @@ contract Minter is IMinter, AdminRole {
         // Get the max trust amount for the recipient acc from the Registry.
         uint256 maxTrust = Registry(registryContract).getMaxTrust(recipient);
 
-        // Get the current CSTK balance of the recipient account.
+        // Get the current token balance of the recipient account.
         uint256 recipientBalance = IERC20(tokenContract).balanceOf(recipient);
 
         // Check if we are not an active member:
@@ -155,7 +155,7 @@ contract Minter is IMinter, AdminRole {
             toMint = amount.mul(numeratorVal).div(denominatorVal);
         }
 
-        // Determine the maximum supply of the CSTK token.
+        // Determine the maximum supply of the token.
         uint256 totalSupply = IERC20(tokenContract).totalSupply();
 
         // The recipient cannot receive more than the following amount of tokens:
