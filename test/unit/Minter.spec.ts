@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BigNumber, BigNumberish, constants, ContractTransaction, utils, Wallet } from 'ethers';
+import { BigNumber, BigNumberish, constants, utils, Wallet } from 'ethers';
 import { ActorFixture, MinterFixture, createFixtureLoader, provider, minterFixture } from '../shared';
 import { LoadFixtureFunction } from '../types';
 
@@ -97,7 +97,7 @@ describe('unit/Minter', () => {
     let subject: (_amount: BigNumberish, sender: Wallet) => Promise<any>;
 
     before(() => {
-      subject = (_amount: BigNumberish, sender: Wallet) => context.minter.connect(sender).setMemebershipDues(_amount);
+      subject = (_amount: BigNumberish, sender: Wallet) => context.minter.connect(sender).setMembershipDues(_amount);
     });
 
     describe('works and', () => {

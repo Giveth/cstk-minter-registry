@@ -30,7 +30,7 @@ contract IMinter {
     /// @notice Set the membership dues that need to be donated to actvate a membership.
     /// @dev Can only be called by an Admin account.
     /// @param amount The amount to set the new dues to
-    function setMemebershipDues(uint256 amount) external;
+    function setMembershipDuesuint256 amount) external;
 
     /// @notice Bridge a donation transaction to the minter contract.
     ///

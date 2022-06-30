@@ -63,7 +63,7 @@ contract Minter is IMinter, AdminRole {
         emit RegistryContractChanged(registryContract, msg.sender);
     }
 
-    function setMemebershipDues(uint256 amount) external onlyAdmin {
+    function setMembershipDues(uint256 amount) external onlyAdmin {
         membershipDuesVal = amount;
         emit MembershipDuesChanged(amount, msg.sender);
     }

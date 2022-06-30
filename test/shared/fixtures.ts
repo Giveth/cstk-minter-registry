@@ -211,7 +211,7 @@ export const minterFixture: Fixture<MinterFixture> = async ([wallet]) => {
   await minter.setRatio(numerator, denominator);
 
   const membershupDues = parseEther('450');
-  await minter.setMemebershipDues(membershupDues);
+  await minter.setMembershipDues(membershupDues);
 
   return {
     minter,
